@@ -1,7 +1,7 @@
 {
   "name": "scheduled-job-controller-service",
   "version": "0.0.1",
-  "description": "Microservice responsible for managing a scheduled job and its related scheduled tasks.",
+  "description": "Microservice responsible for controlling ScheduledJob and its related ScheduledTasks.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lblod/scheduled-job-controller-service.git"

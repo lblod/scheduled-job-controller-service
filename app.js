@@ -115,5 +115,4 @@ async function addScheduledJob(scheduledJob) {
   }, null, true);
 }
 
-
 app.use(errorHandler);

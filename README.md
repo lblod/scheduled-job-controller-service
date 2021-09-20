@@ -112,5 +112,5 @@ repeatFrequency | schema:repeatFrequency | xsd:string | Note: this is going to b
   - `<http://redpencil.data.gift/vocabularies/tasks/hasHarvestingCollection>`
   - Note also: cloning of the contents is limited to known predicates of the related model entities.
     This means e.g. if you have special predicates attached to `RemoteDataObject`, it might not work without extension of this service.
-      - Future work might investigate of how the cloning itself can be made more generic or configurable.
+      - Future work might investigate on how the cloning itself could be made more generic or configurable.
 - Only creation and deletion of `cogs:ScheduledJob` are currently supported.
