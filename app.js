@@ -4,7 +4,7 @@ import { createJobFromScheduledJob } from "./lib/job";
 import { getRepeatFrequency, getScheduledJobData, getScheduledJobs } from './lib/scheduled-job';
 import { waitForDatabase } from './utils/database-utils';
 
-const CRON_MANAGE_SCHEDULED_JOBS = process.env.CRON_MANAGE_SCHEDULED_JOBS || '*/1 * * * *';
+const CRON_MANAGE_SCHEDULED_JOBS = process.env.CRON_MANAGE_SCHEDULED_JOBS || '*/5 * * * *';
 const CRON_JOBS = {};
 
 waitForDatabase(manageScheduledJobs);
@@ -74,6 +74,7 @@ async function addScheduledJob(scheduledJob) {
       if(!CRON_JOBS[scheduledJob.uri]){
         console.warn(`There was an error executing scheduled-job: ${scheduledJob.uri}, but this ScheduledJob was removed from this service`);
         console.warn(`This should be normal, as there is no way currently to gracefully remove a job from with the current cron library`);
+        //TODO: This is not 100% bulletproof and might break if the both calls in the body of the cron change. So be careful.
       }
       else {
         console.error(`Something unexpected went wrong while executing scheduled-job: ${scheduledJob.uri}`);

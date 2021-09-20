@@ -83,28 +83,9 @@ repeatFrequency | schema:repeatFrequency | xsd:string | Note: this is going to b
   jobs-controller:
     image: lblod/scheduled-job-controller-service:x.x.x
 ```
-## deltanotifier
-```
-[ //other rules
-  {
-    match: {
-      object: {
-        type: 'uri',
-        value: 'http://vocab.deri.ie/cogs#ScheduledJob'
-      }
-    },
-    callback: {
-      url: 'http://scheduled-job-controller-service/delta',
-      method: 'POST'
-    },
-    options: {
-      resourceFormat: 'v0.0.1',
-      gracePeriod: 1000,
-      ignoreFromSelf: true
-    }
-  }
-]
-```
+## Environment variables
+- `CRON_MANAGE_SCHEDULED_JOBS`: Periodicity to update the ScheduledJob cron list. Default to '*/5 * * * *';
+
 # Caveats/TODO's
 - The service assumes the job is stored in one graph.
 - Currently deep cloning of `nfo:DataContainer` is only limited to the containers having the predicate:
@@ -115,3 +96,5 @@ repeatFrequency | schema:repeatFrequency | xsd:string | Note: this is going to b
       - Future work might investigate on how the cloning itself could be made more generic or configurable.
 - Only creation and deletion of `cogs:ScheduledJob` are currently supported.
 - No error notifications are done so far: only logged.
+- The non-transactional nature of deltas and the fact there is high interaction with frontend service, makes it diffucult to check delta's for relevant changes (without exposing the internals of the backend)
+   - Hence we choose, for now, work with a cron job to manage the scheduled jobs.
