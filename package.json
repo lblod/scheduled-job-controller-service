@@ -1,0 +1,21 @@
+{
+  "name": "scheduled-job-controller-service",
+  "version": "0.0.1",
+  "description": "Microservice responsible for managing a scheduled job and its related scheduled tasks.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lblod/scheduled-job-controller-service.git"
+  },
+  "author": "redpencil.io",
+  "license": "MIT",
+  "dependencies": {
+    "@lblod/mu-auth-sudo": "^0.2.0",
+    "body-parser": "1.19.0",
+    "cron": "^1.8.2",
+    "lodash.flatten": "^4.4.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
