@@ -71,9 +71,15 @@ async function addScheduledJob(scheduledJob) {
     }
 
     catch(e) {
-      console.error(`Something unexpected went wrong while executing scheduled-job: ${scheduledJob.uri}`);
-      console.error(e);
-      //TODO: alert someone
+      if(!CRON_JOBS[scheduledJob.uri]){
+        console.warn(`There was an error executing scheduled-job: ${scheduledJob.uri}, but this ScheduledJob was removed from this service`);
+        console.warn(`This should be normal, as there is no way currently to gracefully remove a job from with the current cron library`);
+      }
+      else {
+        console.error(`Something unexpected went wrong while executing scheduled-job: ${scheduledJob.uri}`);
+        console.error(e);
+        //TODO: alert someone
+      }
     }
 
   }, null, true);
