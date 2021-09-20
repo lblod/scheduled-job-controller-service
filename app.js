@@ -4,7 +4,7 @@ import { createJobFromScheduledJob } from "./lib/job";
 import { getRepeatFrequency, getScheduledJobData, getScheduledJobs } from './lib/scheduled-job';
 import { waitForDatabase } from './utils/database-utils';
 
-const CRON_MANAGE_SCHEDULED_JOBS = process.env.CRON_MANAGE_SCHEDULED_JOBS || '*/5 * * * *';
+const CRON_MANAGE_SCHEDULED_JOBS = process.env.CRON_MANAGE_SCHEDULED_JOBS || '*/1 * * * *';
 const CRON_JOBS = {};
 
 waitForDatabase(manageScheduledJobs);
@@ -21,6 +21,7 @@ async function manageScheduledJobs(){
       const obsoleteJobUris = currentJobUris.filter(x => !fetchedJobUris.includes(x));
 
       for(const obsoleteJobUri of obsoleteJobUris){
+        console.log(`Removing ${obsoleteJobUri}`);
         await deleteScheduledJob({ uri: obsoleteJobUri });
       }
 
@@ -29,15 +30,18 @@ async function manageScheduledJobs(){
       const newJobUris = fetchedJobUris.filter(x => !currentJobUris.includes(x));
 
       for(const newJobUri of newJobUris){
+        console.log(`Adding ${newJobUri}`);
         await addScheduledJob({ uri: newJobUri });
       }
 
     }
     catch(e) {
-      console.log(`Something unexpected went wrong while managing ScheduledJobs`);
+      console.error(`Something unexpected went wrong while managing ScheduledJobs`);
+      console.error(e);
+
       //TODO: alert someone
     }
-  });
+  }, null, true);
 }
 
 app.get('/', function (_, res) {
@@ -67,7 +71,8 @@ async function addScheduledJob(scheduledJob) {
     }
 
     catch(e) {
-      console.log(`Something unexpected went wrong while executing scheduled-job: ${scheduledJob.uri}`);
+      console.error(`Something unexpected went wrong while executing scheduled-job: ${scheduledJob.uri}`);
+      console.error(e);
       //TODO: alert someone
     }
 
