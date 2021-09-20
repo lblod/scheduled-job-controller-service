@@ -114,3 +114,4 @@ repeatFrequency | schema:repeatFrequency | xsd:string | Note: this is going to b
     This means e.g. if you have special predicates attached to `RemoteDataObject`, it might not work without extension of this service.
       - Future work might investigate on how the cloning itself could be made more generic or configurable.
 - Only creation and deletion of `cogs:ScheduledJob` are currently supported.
+- No error notifications are done so far: only logged.
