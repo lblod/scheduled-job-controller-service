@@ -30,3 +30,5 @@ export const PREFIXES = `
 
 export const TASK_URI_PREFIX = 'http://redpencil.data.gift/id/task/';
 export const ERROR_URI_PREFIX = 'http://redpencil.data.gift/id/jobs/error/';
+
+export const CRON_TIMEZONE = 'Europe/Brussels'

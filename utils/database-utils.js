@@ -17,13 +17,12 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-const waitForDatabase = async function(callback) {
+const waitForDatabase = async function() {
   let loop = true;
   while (loop) {
     loop = !(await isDatabaseUp());
     await sleep(pingDbInterval*1000);
   }
-  callback();
 };
 
 const sendDumyQuery = async function() {
