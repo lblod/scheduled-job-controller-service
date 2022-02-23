@@ -2,6 +2,14 @@ import {CronJob} from 'cron';
 import {app, errorHandler} from 'mu';
 import bodyParser from 'body-parser';
 import {CRON_TIMEZONE} from './constants';
+import {DeltaEvents} from './lib/delta/delta-events';
+import {NewScheduledJobsEvent} from './lib/delta/events/new-scheduled-jobs';
+import {
+  DeletedScheduledJobsEvent
+} from './lib/delta/events/deleted-scheduled-jobs';
+import {
+  UpdatedScheduledJobsEvent,
+} from './lib/delta/events/updated-scheduled-jobs';
 import {ScheduledJobsManager} from './lib/scheduled-jobs-manager';
 import {waitForDatabase} from './utils/database-utils';
 
@@ -14,7 +22,12 @@ app.use(bodyParser.json({
   },
 }));
 
-const scheduledJobsManager = new ScheduledJobsManager();
+const manager = new ScheduledJobsManager();
+const deltaEvents = new DeltaEvents([
+  ['new scheduled-jobs', new NewScheduledJobsEvent(manager)],
+  ['deleted scheduled-jobs', new DeletedScheduledJobsEvent(manager)],
+  ['updated scheduled-jobs', new UpdatedScheduledJobsEvent(manager)],
+]);
 
 /**
  * Setup
@@ -22,7 +35,7 @@ const scheduledJobsManager = new ScheduledJobsManager();
  *  - initialize healing-job: ensures jobs stay in sync and up-to-date with store (client)
  */
 waitForDatabase().then(async () => {
-  const {started} = await scheduledJobsManager.init();
+  const {started} = await manager.init();
   const healing = new HealingJob();
   console.info(
       `Started ${started.length} scheduled-job(s) \n` +
@@ -32,6 +45,11 @@ waitForDatabase().then(async () => {
 
 app.get('/', function(_, res) {
   res.send('Hello from scheduled-job-controller');
+});
+
+app.post('/delta', (req, res) => {
+  deltaEvents.process(req.body);
+  res.status(201).send();
 });
 
 app.use(errorHandler);
@@ -49,12 +67,13 @@ function HealingJob() {
           started,
           updated,
           removed,
-            encounteredIssues
-        } = await scheduledJobsManager.sync();
+          encounteredIssues,
+        } = await manager.sync();
         const logging = ['Healing: Report: Nothing happened, all systems nominal'];
 
-        if(encounteredIssues) {
-          logging.push('Healing: Report: Encountered issues while healing, check the logging above ...')
+        if (encounteredIssues) {
+          logging.push(
+              'Healing: Report: Encountered issues while healing, check the logging above ...');
         }
         if (started.length > 0)
           logging.push(`Healing: Report: Started ${started.length} new job(s)`);
