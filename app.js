@@ -18,71 +18,58 @@ const scheduledJobsManager = new ScheduledJobsManager();
 
 /**
  * Setup
- *  - initialize scheduled-job-manager, (re)start jobs
- *  - initialize healing-job, ensures jobs stay in sync and up-to-date
+ *  - initialize scheduled-job-manager: (re)start jobs
+ *  - initialize healing-job: ensures jobs stay in sync and up-to-date with store (client)
  */
 waitForDatabase().then(async () => {
-  console.log(`[INFO] Initializing ...`);
-  const {started, failed} = await scheduledJobsManager.init();
-  setupHealingJob();
-  console.log(
-      `[INFO] Initialized: ${started.length} job(s) (re)started\n` +
-      `[INFO] Healing: ACTIVE`,
+  const {started} = await scheduledJobsManager.init();
+  const healing = new HealingJob();
+  console.info(
+      `Started ${started.length} scheduled-job(s) \n` +
+      `Healing: ${healing.running ? 'ACTIVE' : 'INACTIVE'}`,
   );
-  if (failed.length > 0) {
-    console.warn(`[WARN] ${failed.length} job(s) failed to (re)start`);
-    failed.forEach(job => {
-      console.error(`[ERROR] For <${job.uri}>, Reason:`);
-      console.error(job.reason);
-    });
-  }
 });
 
 app.get('/', function(_, res) {
   res.send('Hello from scheduled-job-controller');
 });
 
-
 app.use(errorHandler);
 
-/* Functions */
+/* Private Functions */
 
-function setupHealingJob() {
-  new CronJob({
+function HealingJob() {
+  return new CronJob({
     start: true,
     cronTime: CRON_MANAGE_SCHEDULED_JOBS,
     timeZone: CRON_TIMEZONE,
     onTick: async () => {
       try {
-        if(scheduledJobsManager.syncing) {
-          console.info(
-              "[INFO] Healing: manager is still syncing, waiting for next round ...")
-          return;
-        }
-
         const {
           started,
           updated,
           removed,
-          failed,
+            encounteredIssues
         } = await scheduledJobsManager.sync();
-        console.info(
-            `[INFO] Healing Report:\n` +
-            `[INFO] ${started.length} new job(s) started\n` +
-            `[INFO] ${updated.length} job(s) updated\n` +
-            `[INFO] ${removed.length} job(s) removed\n`,
-        );
-        if (failed.length > 0) {
-          console.warn(
-              `[WARN] ${failed.length} job(s) failed to start or update`);
-          failed.forEach(job => {
-            console.error(`[ERROR] For <${job.uri}>, Reason:`);
-            console.error(job.reason);
-          });
+        const logging = ['Healing: Report: Nothing happened, all systems nominal'];
+
+        if(encounteredIssues) {
+          logging.push('Healing: Report: Encountered issues while healing, check the logging above ...')
         }
+        if (started.length > 0)
+          logging.push(`Healing: Report: Started ${started.length} new job(s)`);
+        if (updated.length > 0)
+          logging.push(`Healing: Report: Updated ${updated.length} job(s)`);
+        if (removed.length > 0)
+          logging.push(
+              `Healing: Report: Deleted (and stopped) ${removed.length} job(s)`);
+        if (logging.length > 1) {
+          logging.shift();
+        }
+        console.log(logging.join('\n'));
       } catch (e) {
         console.error(
-            `[ERROR] Healing: Something unexpected went wrong.`);
+            `Healing: Something unexpected went wrong while trying to heal, Reason:`);
         console.error(e);
         //TODO: alert someone
       }
