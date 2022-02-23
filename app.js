@@ -1,20 +1,21 @@
 import {CronJob} from 'cron';
 import {app, errorHandler} from 'mu';
 import bodyParser from 'body-parser';
-import {CRON_TIMEZONE} from './constants';
+import {
+  CRON_HEALING_JOB,
+  CRON_TIMEZONE, DISABLE_DELTA,
+  DISABLE_HEALING_JOB,
+} from './constants';
 import {DeltaEvents} from './lib/delta/delta-events';
 import {NewScheduledJobsEvent} from './lib/delta/events/new-scheduled-jobs';
 import {
-  DeletedScheduledJobsEvent
+  DeletedScheduledJobsEvent,
 } from './lib/delta/events/deleted-scheduled-jobs';
 import {
   UpdatedScheduledJobsEvent,
 } from './lib/delta/events/updated-scheduled-jobs';
 import {ScheduledJobsManager} from './lib/scheduled-jobs-manager';
 import {waitForDatabase} from './utils/database-utils';
-
-const CRON_MANAGE_SCHEDULED_JOBS = process.env.CRON_MANAGE_SCHEDULED_JOBS ||
-    '*/5 * * * *';
 
 app.use(bodyParser.json({
   type: function(req) {
@@ -36,10 +37,12 @@ const deltaEvents = new DeltaEvents([
  */
 waitForDatabase().then(async () => {
   const {started} = await manager.init();
-  const healing = new HealingJob();
+  if (!DISABLE_HEALING_JOB)
+    new HealingJob();
   console.info(
       `Started ${started.length} scheduled-job(s) \n` +
-      `Healing: ${healing.running ? 'ACTIVE' : 'INACTIVE'}`,
+      `Healing: ${!DISABLE_HEALING_JOB ? `ACTIVE [${CRON_HEALING_JOB}]` : 'DISABLED'}\n` +
+      `Delta: ${!DISABLE_DELTA ? 'ACTIVE' : 'DISABLED'}`,
   );
 });
 
@@ -48,8 +51,10 @@ app.get('/', function(_, res) {
 });
 
 app.post('/delta', (req, res) => {
+  if (DISABLE_DELTA)
+    return res.status(503).send();
   deltaEvents.process(req.body);
-  res.status(201).send();
+  return res.status(204).send();
 });
 
 app.use(errorHandler);
@@ -59,7 +64,7 @@ app.use(errorHandler);
 function HealingJob() {
   return new CronJob({
     start: true,
-    cronTime: CRON_MANAGE_SCHEDULED_JOBS,
+    cronTime: CRON_HEALING_JOB,
     timeZone: CRON_TIMEZONE,
     onTick: async () => {
       try {
@@ -69,7 +74,7 @@ function HealingJob() {
           removed,
           encounteredIssues,
         } = await manager.sync();
-        const logging = ['Healing: Report: Nothing happened, all systems nominal'];
+        const logging = ['Healing: Report: Nothing should happen, all systems nominal'];
 
         if (encounteredIssues) {
           logging.push(

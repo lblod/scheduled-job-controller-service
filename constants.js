@@ -1,7 +1,5 @@
 export const STATUS_BUSY = 'http://redpencil.data.gift/id/concept/JobStatus/busy';
 export const STATUS_SCHEDULED = 'http://redpencil.data.gift/id/concept/JobStatus/scheduled';
-export const STATUS_SUCCESS = 'http://redpencil.data.gift/id/concept/JobStatus/success';
-export const STATUS_FAILED = 'http://redpencil.data.gift/id/concept/JobStatus/failed';
 
 export const JOB_TYPE = 'http://vocab.deri.ie/cogs#Job';
 export const TASK_TYPE = 'http://redpencil.data.gift/vocabularies/tasks/Task';
@@ -10,6 +8,9 @@ export const SCHEDULED_JOB_TYPE = 'http://vocab.deri.ie/cogs#ScheduledJob';
 export const SCHEDULED_TASK_TYPE = 'http://redpencil.data.gift/vocabularies/tasks/ScheduledTask';
 export const HARVESTNG_COLLECTION_TYPE = 'http://lblod.data.gift/vocabularies/harvesting/HarvestingCollection';
 export const FILE_DATA_OBJECT_TYPE = 'http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#FileDataObject';
+
+export const RDF_PREDICATE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
+export const REPEAT_FREQUENCY_PREDICATE = 'http://schema.org/repeatFrequency';
 
 export const PREFIXES = `
   PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
@@ -30,5 +31,9 @@ export const PREFIXES = `
 
 export const TASK_URI_PREFIX = 'http://redpencil.data.gift/id/task/';
 export const ERROR_URI_PREFIX = 'http://redpencil.data.gift/id/jobs/error/';
+
+export const CRON_HEALING_JOB = process.env.CRON_HEALING_JOB || '00 6-22 * * 1-5';
+export const DISABLE_HEALING_JOB = process.env.DISABLE_HEALING_JOB || false
+export const DISABLE_DELTA = process.env.DISABLE_DELTA || false
 
 export const CRON_TIMEZONE = 'Europe/Brussels'
