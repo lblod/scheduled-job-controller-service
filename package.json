@@ -1,6 +1,6 @@
 {
   "name": "scheduled-job-controller-service",
-  "version": "0.1.0-beta.5",
+  "version": "1.0.1",
   "description": "Microservice responsible for controlling ScheduledJob and its related ScheduledTasks.",
   "repository": {
     "type": "git",
@@ -9,7 +9,7 @@
   "author": "redpencil.io",
   "license": "MIT",
   "dependencies": {
-    "@lblod/mu-auth-sudo": "^0.6.0-rc.1",
+    "@lblod/mu-auth-sudo": "^0.6.1",
     "body-parser": "^1.19.0",
     "cron": "^1.8.2",
     "lodash.flatten": "^4.4.0"
