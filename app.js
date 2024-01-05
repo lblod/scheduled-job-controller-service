@@ -18,11 +18,13 @@ import {ScheduledJobsManager} from './lib/scheduled-jobs-manager';
 import {waitForDatabase} from './utils/database-utils';
 
 app.use(bodyParser.json({
+  limit: '50mb',
   type: function(req) {
     return /^application\/json/.test(req.get('content-type'));
   },
 }));
 
+let healingJob;
 const manager = new ScheduledJobsManager();
 const deltaEvents = new DeltaEvents([
   ['new scheduled-jobs', new NewScheduledJobsEvent(manager)],
@@ -36,14 +38,18 @@ const deltaEvents = new DeltaEvents([
  *  - initialize healing-job: ensures jobs stay in sync and up-to-date with store (client)
  */
 waitForDatabase().then(async () => {
-  const {started} = await manager.init();
-  if (!DISABLE_HEALING_JOB)
-    new HealingJob();
-  console.info(
-      `Started ${started.length} scheduled-job(s) \n` +
-      `Healing: ${!DISABLE_HEALING_JOB ? `ACTIVE [${CRON_HEALING_JOB}]` : 'DISABLED'}\n` +
-      `Delta: ${!DISABLE_DELTA ? 'ACTIVE' : 'DISABLED'}`,
-  );
+  try {
+    const {started} = await manager.init();
+    if (!DISABLE_HEALING_JOB)
+      healingJob = new HealingJob();
+    console.info(
+        `Started ${started.length} scheduled-job(s) \n` +
+        `Healing: ${!DISABLE_HEALING_JOB ? `ACTIVE [${CRON_HEALING_JOB}]` : 'DISABLED'}\n` +
+        `Delta: ${!DISABLE_DELTA ? 'ACTIVE' : 'DISABLED'}`,
+    );
+  } catch(e) {
+    console.error(`an unexpected error occurred while creating healing job: ${e}`);
+  }
 });
 
 app.get('/', function(_, res) {
