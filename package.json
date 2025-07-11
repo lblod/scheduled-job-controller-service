@@ -1,6 +1,6 @@
 {
   "name": "scheduled-job-controller-service",
-  "version": "1.0.3",
+  "version": "1.2.0",
   "description": "Microservice responsible for controlling ScheduledJob and its related ScheduledTasks.",
   "repository": {
     "type": "git",
