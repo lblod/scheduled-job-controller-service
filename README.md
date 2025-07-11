@@ -62,10 +62,10 @@ inputContainer | task:inputContainer | nfo:DataContainer | An generic type, whic
 `oslc:Error`
 
 ## properties
-Name | Predicate | Range | Definition
---- | --- | --- | ---
-uuid |mu:uuid | xsd:string
-message | oslc:message | xsd:string
+| Name    | Predicate    | Range      | Definition |
+|---------|--------------|------------|------------|
+| uuid    | mu:uuid      | xsd:string |            |
+| message | oslc:message | xsd:string |            |
 
 ## CronSchedule
 Subclass of `schema:Schedule`
@@ -73,10 +73,10 @@ Subclass of `schema:Schedule`
 `task:CronSchedule`
 ### properties
 
-Name | Predicate | Range | Definition
---- | --- | --- | ---
-uuid |mu:uuid | xsd:string
-repeatFrequency | schema:repeatFrequency | xsd:string | Note: this is going to be e.g. '1-5 * * * *',
+| Name            | Predicate              | Range      | Definition                                    |
+|-----------------|------------------------|------------|-----------------------------------------------|
+| uuid            | mu:uuid                | xsd:string |                                               |
+| repeatFrequency | schema:repeatFrequency | xsd:string | Note: this is going to be e.g. '1-5 * * * *', |
 
 # Useage
 ## docker-compose.yml
@@ -85,7 +85,10 @@ repeatFrequency | schema:repeatFrequency | xsd:string | Note: this is going to b
     image: lblod/scheduled-job-controller-service:x.x.x
 ```
 ## Environment variables
-- `CRON_MANAGE_SCHEDULED_JOBS`: Periodicity to update the ScheduledJob cron list. Default to '*/5 * * * *';
+- `CRON_HEALING_JOB`: Periodicity for the healing job that ensures job consistency. Default: `00 6-22 * * 1-5` (hourly, 6-22, Monday-Friday)
+- `DISABLE_HEALING_JOB`: Disable the healing job. Default: `false`
+- `DISABLE_DELTA`: Disable delta handling. Default: `false`
+- `MAX_CONCURRENT_JOBS`: Limit concurrent busy jobs. Set to `0` for unlimited (default), or positive integer to enforce limit
 
 # Caveats/TODO's
 - The service assumes the job is stored in one graph.

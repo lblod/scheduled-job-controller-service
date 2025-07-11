@@ -1,3 +1,5 @@
+import env from 'env-var';
+
 export const STATUS_BUSY = 'http://redpencil.data.gift/id/concept/JobStatus/busy';
 export const STATUS_SCHEDULED = 'http://redpencil.data.gift/id/concept/JobStatus/scheduled';
 
@@ -39,8 +41,9 @@ export const PREFIXES = `
 export const TASK_URI_PREFIX = 'http://redpencil.data.gift/id/task/';
 export const ERROR_URI_PREFIX = 'http://redpencil.data.gift/id/jobs/error/';
 
-export const CRON_HEALING_JOB = process.env.CRON_HEALING_JOB || '00 6-22 * * 1-5';
-export const DISABLE_HEALING_JOB = process.env.DISABLE_HEALING_JOB || false
-export const DISABLE_DELTA = process.env.DISABLE_DELTA || false
+export const CRON_HEALING_JOB = env.get('CRON_HEALING_JOB').default('00 6-22 * * 1-5').asString();
+export const DISABLE_HEALING_JOB = env.get('DISABLE_HEALING_JOB').default('false').asBool();
+export const DISABLE_DELTA = env.get('DISABLE_DELTA').default('false').asBool();
+export const MAX_CONCURRENT_JOBS = env.get('MAX_CONCURRENT_JOBS').default('0').asInt();
 
 export const CRON_TIMEZONE = 'Europe/Brussels'
