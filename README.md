@@ -13,9 +13,10 @@ If provided, the `task:inputContainer` of `task:ScheduledTask` are cloned and at
   PREFIX prov: <http://www.w3.org/ns/prov#>
   PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
   PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
-  PREFIX oslc: <http://open-services.net/ns/core#>
   PREFIX cogs: <http://vocab.deri.ie/cogs#>
   PREFIX adms: <http://www.w3.org/ns/adms#>
+  PREFIX rlog: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/rlog#>
+  PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 ```
 ## ScheduledJob
 Job that owns information on when and how often it has to execute operations.
@@ -59,13 +60,19 @@ inputContainer | task:inputContainer | nfo:DataContainer | An generic type, whic
 ## Error
 
 ## class
-`oslc:Error`
+`rlog:Entry`
 
 ## properties
-| Name    | Predicate    | Range      | Definition |
-|---------|--------------|------------|------------|
-| uuid    | mu:uuid      | xsd:string |            |
-| message | oslc:message | xsd:string |            |
+| Name       | Predicate       | Range         | Definition                                   |
+|------------|-----------------|---------------|----------------------------------------------|
+| uuid       | mu:uuid         | xsd:string    | Unique identifier                            |
+| message    | rlog:message    | xsd:string    | Error message                                |
+| date       | rlog:date       | xsd:dateTime  | Timestamp when error occurred                |
+| level      | rlog:level      | rlog:Level    | Error severity (rlog:ERROR, rlog:WARN, etc.) |
+| module     | rlog:module     | xsd:string    | Service identifier (always "scheduled-job-controller") |
+| resource   | rlog:resource   | rdfs:Resource | Related resource URI (optional)              |
+| stackTrace | rlog:stackTrace | xsd:string    | Stack trace for debugging (optional)         |
+| created    | dct:created     | xsd:dateTime  | Record creation timestamp                    |
 
 ## CronSchedule
 Subclass of `schema:Schedule`
@@ -89,6 +96,46 @@ Subclass of `schema:Schedule`
 - `DISABLE_HEALING_JOB`: Disable the healing job. Default: `false`
 - `DISABLE_DELTA`: Disable delta handling. Default: `false`
 - `MAX_CONCURRENT_JOBS`: Limit concurrent busy jobs. Set to `0` for unlimited (default), or positive integer to enforce limit
+- `MU_APPLICATION_GRAPH`: Default graph for error records when job-specific graph is unavailable. Default: `http://mu.semte.ch/graphs/public`
+
+## Error Handling and Monitoring
+
+The service automatically creates structured error records in the database when failures occur. These use the rlog ontology for rich metadata and can be queried for monitoring purposes.
+
+### Error Record Structure
+Each error is stored as an `rlog:Entry` with the following properties:
+- **Timestamp**: When the error occurred (`rlog:date`)
+- **Severity**: Error level (`rlog:level` - typically `rlog:ERROR`)
+- **Source**: Service identifier (`rlog:module` - always "scheduled-job-controller")
+- **Context**: Related resource URI (`rlog:resource` - e.g., the failing scheduled job)
+- **Details**: Error message and stack trace for debugging
+
+### Error Monitoring Examples
+
+Query recent errors:
+```sparql
+  PREFIX rlog: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/rlog#>
+SELECT ?date ?module ?message ?resource WHERE {
+  ?error a rlog:Entry ;
+         rlog:level rlog:ERROR ;
+         rlog:date ?date ;
+         rlog:module ?module ;
+         rlog:message ?message .
+  OPTIONAL { ?error rlog:resource ?resource }
+  FILTER(?date > "2025-07-01T00:00:00Z"^^xsd:dateTime)
+}
+ORDER BY DESC(?date)
+```
+
+Query errors by service:
+```sparql
+SELECT * WHERE {
+  ?error rlog:module "scheduled-job-controller" ;
+         rlog:message ?message ;
+         rlog:date ?date ;
+         rlog:resource ?failedJob .
+}
+```
 
 # Caveats/TODO's
 - The service assumes the job is stored in one graph.
@@ -99,6 +146,3 @@ Subclass of `schema:Schedule`
     This means e.g. if you have special predicates attached to `RemoteDataObject`, it might not work without extension of this service.
       - Future work might investigate on how the cloning itself could be made more generic or configurable.
 - Only creation and deletion of `cogs:ScheduledJob` are currently supported.
-- No error notifications are done so far: only logged.
-- The non-transactional nature of deltas and the fact there is high interaction with frontend service, makes it diffucult to check delta's for relevant changes (without exposing the internals of the backend)
-   - Hence we choose, for now, work with a cron job to manage the scheduled jobs.

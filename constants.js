@@ -5,7 +5,10 @@ export const STATUS_SCHEDULED = 'http://redpencil.data.gift/id/concept/JobStatus
 
 export const JOB_TYPE = 'http://vocab.deri.ie/cogs#Job';
 export const TASK_TYPE = 'http://redpencil.data.gift/vocabularies/tasks/Task';
-export const ERROR_TYPE= 'http://open-services.net/ns/core#Error';
+export const ERROR_TYPE= 'http://persistence.uni-leipzig.org/nlp2rdf/ontologies/rlog#Entry';
+export const RLOG_ERROR_LEVEL = 'http://persistence.uni-leipzig.org/nlp2rdf/ontologies/rlog#ERROR';
+export const RLOG_WARN_LEVEL = 'http://persistence.uni-leipzig.org/nlp2rdf/ontologies/rlog#WARN';
+export const RLOG_INFO_LEVEL = 'http://persistence.uni-leipzig.org/nlp2rdf/ontologies/rlog#INFO';
 export const SCHEDULED_JOB_TYPE = 'http://vocab.deri.ie/cogs#ScheduledJob';
 export const SCHEDULED_TASK_TYPE = 'http://redpencil.data.gift/vocabularies/tasks/ScheduledTask';
 export const HARVESTNG_COLLECTION_TYPE = 'http://lblod.data.gift/vocabularies/harvesting/HarvestingCollection';
@@ -36,6 +39,8 @@ export const PREFIXES = `
     PREFIX wotSec: <https://www.w3.org/2019/wot/security#>
     PREFIX rpioHttp: <http://redpencil.data.gift/vocabularies/http/>
     PREFIX dgftSec: <http://lblod.data.gift/vocabularies/security/>
+    PREFIX rlog: <http://persistence.uni-leipzig.org/nlp2rdf/ontologies/rlog#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 `;
 
 export const TASK_URI_PREFIX = 'http://redpencil.data.gift/id/task/';
@@ -45,5 +50,6 @@ export const CRON_HEALING_JOB = env.get('CRON_HEALING_JOB').default('00 6-22 * *
 export const DISABLE_HEALING_JOB = env.get('DISABLE_HEALING_JOB').default('false').asBool();
 export const DISABLE_DELTA = env.get('DISABLE_DELTA').default('false').asBool();
 export const MAX_CONCURRENT_JOBS = env.get('MAX_CONCURRENT_JOBS').default('0').asInt();
+export const MU_APPLICATION_GRAPH = env.get('MU_APPLICATION_GRAPH').default('http://mu.semte.ch/graphs/public').asString();
 
 export const CRON_TIMEZONE = 'Europe/Brussels'

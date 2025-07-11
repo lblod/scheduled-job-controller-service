@@ -5,6 +5,8 @@ import {
   CRON_HEALING_JOB,
   CRON_TIMEZONE, DISABLE_DELTA,
   DISABLE_HEALING_JOB,
+  MU_APPLICATION_GRAPH,
+  RLOG_ERROR_LEVEL,
 } from './constants';
 import {DeltaEvents} from './lib/delta/delta-events';
 import {NewScheduledJobsEvent} from './lib/delta/events/new-scheduled-jobs';
@@ -16,6 +18,7 @@ import {
 } from './lib/delta/events/updated-scheduled-jobs';
 import {ScheduledJobsManager} from './lib/scheduled-jobs-manager';
 import {waitForDatabase} from './utils/database-utils';
+import {createError} from './lib/error';
 
 app.use(bodyParser.json({
   limit: '50mb',
@@ -101,7 +104,12 @@ function HealingJob() {
         console.error(
             `Healing: Something unexpected went wrong while trying to heal, Reason:`);
         console.error(e);
-        //TODO: alert someone
+        await createError(MU_APPLICATION_GRAPH,
+                         `Healing job failed: ${e.message || e}`,
+                         {
+                           level: RLOG_ERROR_LEVEL,
+                           stackTrace: e.stack
+                         });
       }
     },
   });
