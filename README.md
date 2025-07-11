@@ -25,15 +25,16 @@ Job that owns information on when and how often it has to execute operations.
 
 ## properties
 
-Name | Predicate | Range | Definition
---- | --- | --- | ---
-uuid |mu:uuid | xsd:string
-creator | dct:creator | rdfs:Resource
-created | dct:created | xsd:dateTime
-modified | dct:modified | xsd:dateTime
-jobType | task:operation | skos:Concept
-title | dct:title | xsd:string
-schedule | task:schedule | http://schema.org/Schedule
+| Name     | Predicate              | Range                      | Definition |
+|----------|------------------------|----------------------------|------------|
+| uuid     | mu:uuid                | xsd:string                 |            |
+| creator  | dct:creator            | rdfs:Resource              |            |
+| created  | dct:created            | xsd:dateTime               |            |
+| modified | dct:modified           | xsd:dateTime               |            |
+| jobType  | task:operation         | skos:Concept               |            |
+| title    | dct:title              | xsd:string                 |            |
+| schedule | task:schedule          | http://schema.org/Schedule |            |
+| vendor   | prov:wasAssociatedWith | rdfs:Resource              |            |
 
 
 ## ScheduledTask
