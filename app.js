@@ -46,7 +46,7 @@ waitForDatabase().then(async () => {
     const {started} = await manager.init();
     if (!DISABLE_HEALING_JOB)
       healingJob = new HealingJob();
-    console.info(
+    console.log(
         `Started ${started.length} scheduled-job(s) \n` +
         `Healing: ${!DISABLE_HEALING_JOB ? `ACTIVE [${CRON_HEALING_JOB}]` : 'DISABLED'}\n` +
         `Delta: ${!DISABLE_DELTA ? 'ACTIVE' : 'DISABLED'}`,
