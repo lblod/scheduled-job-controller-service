@@ -78,6 +78,7 @@ app.post('/run-scheduled-job', async (req, res) => {
       }]
     });
   }
+  console.log(`scheduled job <${uri}> was triggered manually. processing job...`);
 
   const success = await runScheduledJob(uri, false);
 
@@ -89,6 +90,7 @@ app.post('/run-scheduled-job', async (req, res) => {
       }]
     });
   }
+  console.log(`scheduled job ${uri} started manually.`);
 
   return res.status(204).send();
 });
