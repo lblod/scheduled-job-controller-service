@@ -19,6 +19,7 @@ import {
 import {ScheduledJobsManager} from './lib/scheduled-jobs-manager';
 import {waitForDatabase} from './utils/database-utils';
 import {createError} from './lib/error';
+import { runScheduledJob } from './lib/scheduled-job';
 
 app.use(bodyParser.json({
   limit: '50mb',
@@ -63,6 +64,32 @@ app.post('/delta', (req, res) => {
   if (DISABLE_DELTA)
     return res.status(503).send();
   deltaEvents.process(req.body);
+  return res.status(204).send();
+});
+
+app.post('/run-scheduled-job', async (req, res) => {
+  const uri = req.query.uri;
+
+  if (!uri?.length) {
+    return res.status(400).json({
+      errors: [{
+        status: "400",
+        title: "Missing uri parameter",
+      }]
+    });
+  }
+
+  const success = await runScheduledJob(uri, false);
+
+  if (!success) {
+    return res.status(400).json({
+      errors: [{
+        status: "400",
+        title: "Job creation failed, please check the logs.",
+      }]
+    });
+  }
+
   return res.status(204).send();
 });
 
