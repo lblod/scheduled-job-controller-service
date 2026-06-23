@@ -137,6 +137,17 @@ SELECT * WHERE {
 }
 ```
 
+# Config
+This service allows for a config file that holds a single property in a default exported object:
+```js
+{
+  jobPredicatesToCopy: ['http://mu.semte.ch/vocabularies/ext/shapeForTargets'],
+}
+```
+
+The service will copy all triples with a predicate in the list `jobPredicatesToCopy` from the scheduled job instance to the job instance that is spawned as part of the scheduling of the job.
+
+
 # Caveats/TODO's
 - The service assumes the job is stored in one graph.
 - Currently deep cloning of `nfo:DataContainer` is only limited to the containers having the predicate:
