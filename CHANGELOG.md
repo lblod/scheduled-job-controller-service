@@ -1,4 +1,6 @@
 # Changelog
+## 1.3.0 (2026-06-25)
+- Allow copying predicates across from scheduled job to regular job started on the schedule.
 ## 1.2.2 (2025-09-15)
 - added an endpoint to trigger manually a job. This is mainly for debug purpose but could be included to the dashboard if necessary.
   Example in curl:
