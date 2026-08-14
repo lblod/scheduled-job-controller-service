@@ -1,4 +1,6 @@
 # Changelog
+## 1.3.1 (2026-08-14)
+- Fix: errors were not written properly and instead crashed the service
 ## 1.3.0 (2026-06-25)
 - Allow copying predicates across from scheduled job to regular job started on the schedule.
 ## 1.2.2 (2025-09-15)
