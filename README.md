@@ -36,7 +36,7 @@ Job that owns information on when and how often it has to execute operations.
 | title    | dct:title              | xsd:string                 |            |
 | schedule | task:schedule          | http://schema.org/Schedule |            |
 | vendor   | prov:wasAssociatedWith | rdfs:Resource              |            |
-
+| subject  | dct:subject            | rdfs:Resource              |            |
 
 ## ScheduledTask
 Subclass of `cogs:ScheduledJob`
