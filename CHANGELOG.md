@@ -1,11 +1,21 @@
 # Changelog
+
+## 1.3.2 (2026-10-22)
+
+- Now when a scheduled job is triggered, copy the dct:subject (eeinheid) from the scheduled job to the job instance.
+
 ## 1.3.1 (2026-08-14)
+
 - Fix: errors were not written properly and instead crashed the service
+
 ## 1.3.0 (2026-06-25)
+
 - Allow copying predicates across from scheduled job to regular job started on the schedule.
+
 ## 1.2.2 (2025-09-15)
+
 - added an endpoint to trigger manually a job. This is mainly for debug purpose but could be included to the dashboard if necessary.
   Example in curl:
-    ```
-    docker compose exec scheduled-job-controller curl -v -X POST http://localhost/run-scheduled-job?uri=http://redpencil.data.gift/id/scheduled-job/c2ffa700-e462-46b4-abf5-103d1a1854d0 -H "Content-Type: application/json"
-    ```
+  ```
+  docker compose exec scheduled-job-controller curl -v -X POST http://localhost/run-scheduled-job?uri=http://redpencil.data.gift/id/scheduled-job/c2ffa700-e462-46b4-abf5-103d1a1854d0 -H "Content-Type: application/json"
+  ```
