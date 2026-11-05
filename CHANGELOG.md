@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.0 (2026-11-05)
+
+- vendor's triple `prov:wasAssociatedWith` and unit's triple `dct:subject` are no longer optional properties manually copied from the scheduledJob.
+-  Now they must be copied using the `Allow copying predicates` feature added in 1.3.0.
+
 ## 1.3.2 (2026-10-22)
 
 - Now when a scheduled job is triggered, copy the dct:subject (eeinheid) from the scheduled job to the job instance.
